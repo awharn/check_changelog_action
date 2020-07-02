@@ -25,8 +25,11 @@ try {
   };
 
   request(reqOptions, function(err, res, body) {
-    bodyString = body;
+    bodyString = err;
+    bodyString = bodystring + " Body: " + body;
+    bodyString = bodyString + " Res: " + res;
     json = JSON.parse(body);
+
     for (object in json) {
       files.push(object.filename);
       if (object.filename.contains(file)) {
