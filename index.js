@@ -18,6 +18,7 @@ try {
     url: reqUrl,
     method: 'GET',
     headers: {
+      'User-Agent': "Check-Changelog-Action",
       'Authorization': `Bearer ${token}`
     }
   };
