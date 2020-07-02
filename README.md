@@ -29,5 +29,5 @@ uses: awharn/check_changelog_action@master
 with:
   header: '## Recent Chagnes'
   file: 'CHANGELOG.md'
-  token: ${{ GITHUB_TOKEN }}
+  token: ${{ secrets.GITHUB_TOKEN }}
 ```
