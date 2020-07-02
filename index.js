@@ -11,25 +11,12 @@ const token = core.getInput('token');
 var changed = false;
 var headerFound = false;
 var json;
-var bodyString;
-var files = [];
 
 function callback(error, response, body) {
-  bodyString = error;
-  bodyString = bodyString + " Body: " + body;
-  bodyString = bodyString + " Response: " + response;
   json = JSON.parse(body);
-  console.log(json);
-  console.log(file);
-
-  fs.readdir(directory, function(err, items) {
-    console.log(items);
-  });
 
   for (item in JSON.parse(body)) {
     var object = json[item];
-    console.log(object);
-    console.log(object.filename.toString());
     if (object.filename.toString().includes(file)) {
       changed = true;
       var contents = fs.readFileSync(directory + "/" + object.filename);
@@ -55,8 +42,6 @@ try {
   };
 
   request(reqOptions, callback);
-
-  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}; Json: ${JSON.stringify(json)}; Body: ${bodyString}`);
 
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
