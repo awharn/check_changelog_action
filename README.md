@@ -1,23 +1,33 @@
-# Hello world JavaScript action
-
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log. To learn how this action was built, see "[Creating a JavaScript action](https://help.github.com/en/articles/creating-a-javascript-action)" in the GitHub Help documentation.
-
 ## Inputs
 
-### `who-to-greet`
+### `header`
 
-**Required** The name of the person to greet. Default `"World"`.
+**Required** The header that the action looks for in the changelog. Default: `## Recent Changes`
+
+### `file`
+
+**Required** The path to the changelog. Default: `CHANGELOG.md`
+
+### `token`
+
+**Required** The repository's GITHUB_TOKEN.
 
 ## Outputs
 
-### `time`
+### `changed`
 
-The time we greeted you.
+Whether or not the changelog was detected in the PR diff.
+
+### `header`
+
+Whether or not the header was detected in the PR diff.
 
 ## Example usage
 
 ```yaml
-uses: actions/hello-world-javascript-action@master
+uses: awharn/check_changelog_action@master
 with:
-  who-to-greet: 'Mona the Octocat'
+  header: '## Recent Chagnes'
+  file: 'CHANGELOG.md'
+  token: ${{ GITHUB_TOKEN }}
 ```
