@@ -24,10 +24,10 @@ function callback(error, response, body) {
     var object = json[item];
     files.push(object.filename);
     console.log(object);
-    if (object.filename.contains(file)) {
+    if (object.filename.toString().includes(file)) {
       changed = true;
       var contents = fs.readFileSync(object.filename);
-      if (contents.contains(header)) {
+      if (contents.includes(header)) {
         headerFound = true;
       }
     }
