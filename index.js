@@ -25,12 +25,12 @@ function callback(error, response, body) {
       }
     }
   }
+
+  return;
 }
 
 try {
   const reqUrl = `https://api.github.com/repos/${github.context.payload.repository.full_name}/pulls/${github.context.payload.pull_request.number}/files`;
-
-  console.log(reqUrl);
 
   const reqOptions = {
     url: reqUrl,
