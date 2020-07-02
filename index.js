@@ -18,9 +18,11 @@ function callback(error, response, body) {
   for (item in JSON.parse(body)) {
     var object = json[item];
     if (object.filename.toString().includes(file)) {
+      console.log("Got to first point");
       changed = true;
       var contents = fs.readFileSync(directory + "/" + object.filename);
       if (contents.includes(header)) {
+        console.log("Got to second point");
         headerFound = true;
       }
     }
@@ -45,6 +47,8 @@ try {
 
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
+  console.log(changed);
+  console.log(headerFound);
 
   if (changed == false) {
     throw new Error("The changelog was not changed in this pull request.");
