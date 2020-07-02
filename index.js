@@ -20,7 +20,6 @@ function callback(error, response, body) {
     if (object.filename.toString().includes(file)) {
       changed = true;
       var contents = fs.readFileSync(directory + "/" + object.filename);
-      throw new Error(`${contents} | ${header}`);
       if (contents.includes(header)) {
         headerFound = true;
       }
