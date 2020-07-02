@@ -27,7 +27,7 @@ function callback(error, response, body) {
     console.log(object.filename.toString());
     if (object.filename.toString().includes(file)) {
       changed = true;
-      var contents = fs.readFileSync(object.filename);
+      var contents = fs.readFileSync(__dirname + "/" + object.filename);
       if (contents.includes(header)) {
         headerFound = true;
       }
