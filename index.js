@@ -12,17 +12,28 @@ var changed = false;
 var headerFound = false;
 var json;
 
+function ChangelogError(msg) {
+  Error.call(this);
+  Error.stackTraceLimit = 1;
+  Error.prepareStackTrace = function (err, stack) {
+    return stack;
+  }
+  Error.captureStackTrace(this, arguments.callee);
+  this.message = msg;
+  this.name = "ChangelogError";
+};
+
+ChangelogError.prototype.__proto__ = Error.prototype;
+
 function callback(error, response, body) {
   json = JSON.parse(body);
 
   for (item in JSON.parse(body)) {
     var object = json[item];
     if (object.filename.toString().includes(file)) {
-      console.log("Got to first point");
       changed = true;
       var contents = fs.readFileSync(directory + "/" + object.filename);
       if (contents.includes(header)) {
-        console.log("Got to second point");
         headerFound = true;
       }
     }
@@ -30,13 +41,11 @@ function callback(error, response, body) {
 
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
-  console.log(changed);
-  console.log(headerFound);
 
   if (changed == false) {
-    throw new Error("The changelog was not changed in this pull request.");
+    throw new ChangelogError("The changelog was not changed in this pull request.");
   } else if (headerFound == false) {
-    throw new Error("The changelog has changed, but the required header is missing.");
+    throw new ChangelogError("The changelog has changed, but the required header is missing.");
   }
 }
 
