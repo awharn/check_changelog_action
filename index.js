@@ -27,6 +27,17 @@ function callback(error, response, body) {
       }
     }
   }
+
+  core.setOutput('changed', changed.toString());
+  core.setOutput('header', headerFound.toString());
+  console.log(changed);
+  console.log(headerFound);
+
+  if (changed == false) {
+    throw new Error("The changelog was not changed in this pull request.");
+  } else if (headerFound == false) {
+    throw new Error("The changelog has changed, but the required header is missing.");
+  }
 }
 
 try {
@@ -42,17 +53,6 @@ try {
   };
 
   request(reqOptions, callback);
-
-  core.setOutput('changed', changed.toString());
-  core.setOutput('header', headerFound.toString());
-  console.log(changed);
-  console.log(headerFound);
-
-  if (changed == false) {
-    throw new Error("The changelog was not changed in this pull request.");
-  } else if (headerFound == false) {
-    throw new Error("The changelog has changed, but the required header is missing.");
-  }
 
 } catch (error) {
   core.setFailed(error.message);
