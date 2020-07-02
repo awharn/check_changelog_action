@@ -37,7 +37,7 @@ try {
     }
   });  
 
-  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}; Json: ${json.toString()}`);
+  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}; Json: ${JSON.stringify(json)}`);
 
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
