@@ -26,7 +26,7 @@ try {
 
   request(reqOptions, function(err, res, body) {
     bodyString = err;
-    bodyString = bodystring + " Body: " + body;
+    bodyString = bodyString + " Body: " + body;
     bodyString = bodyString + " Res: " + res;
     json = JSON.parse(body);
 
