@@ -12,19 +12,6 @@ var changed = false;
 var headerFound = false;
 var json;
 
-function ChangelogError(msg) {
-  Error.call(this);
-  Error.stackTraceLimit = 1;
-  Error.prepareStackTrace = function (err, stack) {
-    return stack;
-  }
-  Error.captureStackTrace(this, arguments.callee);
-  this.message = msg;
-  this.name = "ChangelogError";
-};
-
-ChangelogError.prototype.__proto__ = Error.prototype;
-
 function callback(error, response, body) {
   json = JSON.parse(body);
 
@@ -43,9 +30,13 @@ function callback(error, response, body) {
   core.setOutput('header', headerFound.toString());
 
   if (changed == false) {
-    throw new ChangelogError("The changelog was not changed in this pull request.");
+    const err = new Error("The changelog was not changed in this pull request.");
+    err.stack = "";
+    throw err;
   } else if (headerFound == false) {
-    throw new ChangelogError("The changelog has changed, but the required header is missing.");
+    const err = new Error("The changelog has changed, but the required header is missing.");
+    err.stack = "";
+    throw err;
   }
 }
 
