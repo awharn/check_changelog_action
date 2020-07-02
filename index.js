@@ -11,13 +11,13 @@ function callback(error, response, body) {
 
   for (object in json) {
     files.push(object.filename);
-    if (object.filename.contains(file)) {
-      changed = true;
-      var contents = fs.readFileSync(object.filename);
-      if (contents.contains(header)) {
-        headerFound = true;
-      }
-    }
+    //if (object.filename.contains(file)) {
+    //  changed = true;
+    //  var contents = fs.readFileSync(object.filename);
+    //  if (contents.contains(header)) {
+    //    headerFound = true;
+    //  }
+    //}
   }
 }
 
