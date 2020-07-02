@@ -8,9 +8,12 @@ function callback(error, response, body) {
   bodyString = bodyString + " Body: " + body;
   bodyString = bodyString + " Response: " + response;
   json = JSON.parse(body);
+  console.log(json);
+  console.log(body);
 
-  for (object in json) {
+  for (object in JSON.parse(body)) {
     files.push(object.filename);
+    console.log(object);
     //if (object.filename.contains(file)) {
     //  changed = true;
     //  var contents = fs.readFileSync(object.filename);
