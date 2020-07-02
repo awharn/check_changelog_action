@@ -19,11 +19,12 @@ function callback(error, response, body) {
   bodyString = bodyString + " Response: " + response;
   json = JSON.parse(body);
   console.log(json);
+  console.log(file);
 
   for (item in JSON.parse(body)) {
     var object = json[item];
-    files.push(object.filename);
     console.log(object);
+    console.log(object.filename.toString());
     if (object.filename.toString().includes(file)) {
       changed = true;
       var contents = fs.readFileSync(object.filename);
