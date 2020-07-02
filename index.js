@@ -16,7 +16,8 @@ function callback(error, response, body) {
   json = JSON.parse(body);
   console.log(json);
 
-  for (object in JSON.parse(body)) {
+  for (item in JSON.parse(body)) {
+    var object = json[item];
     //files.push(object.filename);
     console.log(object);
     //if (object.filename.contains(file)) {
