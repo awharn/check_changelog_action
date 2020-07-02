@@ -27,8 +27,6 @@ function callback(error, response, body) {
       }
     }
   }
-
-  return;
 }
 
 try {
