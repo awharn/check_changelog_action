@@ -3,6 +3,7 @@ const github = require('@actions/github');
 const fs = require('fs');
 const request = require('request');
 
+const directory = process.env.GITHUB_WORKSPACE
 const header = core.getInput('header');
 const file = core.getInput('file');
 const token = core.getInput('token');
@@ -21,13 +22,17 @@ function callback(error, response, body) {
   console.log(json);
   console.log(file);
 
+  fs.readdir(directory, function(err, items) {
+    console.log(items);
+  });
+
   for (item in JSON.parse(body)) {
     var object = json[item];
     console.log(object);
     console.log(object.filename.toString());
     if (object.filename.toString().includes(file)) {
       changed = true;
-      var contents = fs.readFileSync(__dirname + "/" + object.filename);
+      var contents = fs.readFileSync(directory + "/" + object.filename);
       if (contents.includes(header)) {
         headerFound = true;
       }
