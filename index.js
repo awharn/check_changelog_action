@@ -23,10 +23,9 @@ try {
     }
   };
 
-  console.log(reqOptions);
-
   request(reqOptions, function(err, res, body) {
     json = JSON.parse(body);
+    console.log(json); //Fixme
     for (object in json) {
       files.push(object.filename);
       if (object.filename.contains(file)) {
