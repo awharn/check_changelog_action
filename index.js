@@ -15,7 +15,7 @@ try {
   let files = [];
 
   const reqOptions = {
-    url: reqURL,
+    url: reqUrl,
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`
