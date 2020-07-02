@@ -11,7 +11,8 @@ try {
   
   let changed = false;
   let headerFound = false;
-  let json = {};
+  let json;
+  let bodyString;
   let files = [];
 
   const reqOptions = {
@@ -24,6 +25,7 @@ try {
   };
 
   request(reqOptions, function(err, res, body) {
+    bodyString = body;
     json = JSON.parse(body);
     for (object in json) {
       files.push(object.filename);
@@ -37,7 +39,7 @@ try {
     }
   });  
 
-  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}; Json: ${JSON.stringify(json)}`);
+  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}; Json: ${JSON.stringify(json)}; Body: ${bodyString}`);
 
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
