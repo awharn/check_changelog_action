@@ -1,15 +1,46 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const fs = require('fs');
+const request = require('request');
 
 try {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = core.getInput('who-to-greet');
-  console.log(`Hello ${nameToGreet}!`);
-  const time = (new Date()).toTimeString();
-  core.setOutput("time", time);
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
+  const header = core.getInput('header');
+  const file = core.getInput('file');
+  const token = core.getInput('token');
+  const reqUrl = `https://api.github.com/repos/${github.context.payload.repository.full_name}}/pulls/${github.context.payload.pull_request.number}/files`;
+  
+  let changed = false;
+  let headerFound = false;
+  let json = {};
+  let files = [];
+
+  const reqOptions = {
+    url: reqURL,
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  };
+
+  request(reqOptions, function(err, res, body) {
+    json = JSON.parse(body);
+    for (object in json) {
+      files.push(object.filename);
+      if (object.filename.contains(file)) {
+        changed = true;
+        var contents = fs.readFileSync(object.filename)
+        if (contents.contains(header)) {
+          headerFound = true;
+        }
+      }
+    }
+  });  
+
+  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}`);
+
+  core.setOutput('changed', changed.toString());
+  core.setOutput('header', headerFound.toString())
+
 } catch (error) {
   core.setFailed(error.message);
 }

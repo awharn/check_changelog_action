@@ -1,13 +1,22 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'Check Changelog'
+description: 'Check if a changelog has changed, and a header has been specified'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  header:
+    description: 'The header to search for in the changelog'
     required: true
-    default: 'World'
+    default: '## Recent Changes'
+  file:
+    description: 'The path to the changelog'
+    required: true
+    default: 'CHANGELOG.md'
+  token:
+    description: 'The GitHub token'
+    required: true
 outputs:
-  time: # id of output
-    description: 'The time we we greeted you'
+  changed:
+    description: 'If the changelog file was changed in the PR diff'
+  header:
+    description: 'If the required header was found'
 runs:
   using: 'node12'
   main: 'index.js'
