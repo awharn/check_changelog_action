@@ -17,15 +17,15 @@ function callback(error, response, body) {
   console.log(json);
 
   for (object in JSON.parse(body)) {
-    files.push(object.filename);
+    //files.push(object.filename);
     console.log(object);
-    if (object.filename.contains(file)) {
-      changed = true;
-      var contents = fs.readFileSync(object.filename);
-      if (contents.contains(header)) {
-        headerFound = true;
-      }
-    }
+    //if (object.filename.contains(file)) {
+    //  changed = true;
+    //  var contents = fs.readFileSync(object.filename);
+    //  if (contents.contains(header)) {
+    //    headerFound = true;
+    //  }
+    //}
   }
 }
 
