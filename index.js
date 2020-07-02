@@ -55,6 +55,12 @@ try {
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
 
+  if (changed == false) {
+    throw new Error("The changelog was not changed in this pull request.");
+  } else if (headerFound == false) {
+    throw new Error("The changelog has changed, but the required header is missing.");
+  }
+
 } catch (error) {
   core.setFailed(error.message);
 }
