@@ -25,7 +25,6 @@ try {
 
   request(reqOptions, function(err, res, body) {
     json = JSON.parse(body);
-    console.log(json); //Fixme
     for (object in json) {
       files.push(object.filename);
       if (object.filename.contains(file)) {
@@ -38,7 +37,7 @@ try {
     }
   });  
 
-  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}`);
+  console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}; Json: ${json}`);
 
   core.setOutput('changed', changed.toString());
   core.setOutput('header', headerFound.toString());
