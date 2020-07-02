@@ -28,7 +28,7 @@ try {
   const header = core.getInput('header');
   const file = core.getInput('file');
   const token = core.getInput('token');
-  const reqUrl = `https://api.github.com/repos/${github.context.payload.repository.full_name}}/pulls/${github.context.payload.pull_request.number}/files`;
+  const reqUrl = `https://api.github.com/repos/${github.context.payload.repository.full_name}/pulls/${github.context.payload.pull_request.number}/files`;
 
   console.log(reqUrl);
   
