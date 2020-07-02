@@ -28,7 +28,7 @@ try {
       files.push(object.filename);
       if (object.filename.contains(file)) {
         changed = true;
-        var contents = fs.readFileSync(object.filename)
+        var contents = fs.readFileSync(object.filename);
         if (contents.contains(header)) {
           headerFound = true;
         }
@@ -39,7 +39,7 @@ try {
   console.log(`Files: ${files}; Changelog found: ${changed}; Header found: ${headerFound}`);
 
   core.setOutput('changed', changed.toString());
-  core.setOutput('header', headerFound.toString())
+  core.setOutput('header', headerFound.toString());
 
 } catch (error) {
   core.setFailed(error.message);
