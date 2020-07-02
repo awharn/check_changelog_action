@@ -3,24 +3,29 @@ const github = require('@actions/github');
 const fs = require('fs');
 const request = require('request');
 
+var changed = false;
+var headerFound = false;
+var json;
+var bodyString;
+var files = [];
+
 function callback(error, response, body) {
   bodyString = error;
   bodyString = bodyString + " Body: " + body;
   bodyString = bodyString + " Response: " + response;
   json = JSON.parse(body);
   console.log(json);
-  console.log(body);
 
   for (object in JSON.parse(body)) {
     files.push(object.filename);
     console.log(object);
-    //if (object.filename.contains(file)) {
-    //  changed = true;
-    //  var contents = fs.readFileSync(object.filename);
-    //  if (contents.contains(header)) {
-    //    headerFound = true;
-    //  }
-    //}
+    if (object.filename.contains(file)) {
+      changed = true;
+      var contents = fs.readFileSync(object.filename);
+      if (contents.contains(header)) {
+        headerFound = true;
+      }
+    }
   }
 }
 
@@ -31,12 +36,6 @@ try {
   const reqUrl = `https://api.github.com/repos/${github.context.payload.repository.full_name}/pulls/${github.context.payload.pull_request.number}/files`;
 
   console.log(reqUrl);
-  
-  var changed = false;
-  var headerFound = false;
-  var json;
-  var bodyString;
-  var files = [];
 
   const reqOptions = {
     url: reqUrl,
