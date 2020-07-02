@@ -18,10 +18,12 @@ try {
     url: reqUrl,
     method: 'GET',
     headers: {
-      'User-Agent': "Check-Changelog-Action",
+      'User-Agent': 'Check-Changelog-Action',
       'Authorization': `Bearer ${token}`
     }
   };
+
+  console.log(reqOptions);
 
   request(reqOptions, function(err, res, body) {
     json = JSON.parse(body);
