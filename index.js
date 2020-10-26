@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
+const path = require('path');
 const request = require('request');
 
 const directory = process.env.GITHUB_WORKSPACE
@@ -18,8 +19,8 @@ if (lerna) {
   if (lernaJsonParsed) {
     for (object of lernaJsonParsed) {
       let location = object.location;
-      location = location.substring(location.indexOf("${github.context.payload.repository.name}") + str.length("${github.context.payload.repository.name}") + 1);
-      lernaLocations.push(location)
+      location = path.relative(directory, location);
+      lernaLocations.push(location);
     }
   }
 }
