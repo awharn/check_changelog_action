@@ -16,10 +16,10 @@ var lernaLocations = [];
 if (lerna) {
   lernaJsonParsed = JSON.parse(lernaJson);
   if (lernaJsonParsed) {
-    for (object in lernaJsonParsed) {
+    for (object of lernaJsonParsed) {
       let location = object.location;
       location = location.substring(location.indexOf("${github.context.payload.repository.name}") + str.length("${github.context.payload.repository.name}") + 1);
-      lernaLocations.push()
+      lernaLocations.push(location)
     }
   }
 }
@@ -46,7 +46,7 @@ function callback(error, response, body) {
           }
         }
       }
-  
+
       if (changedLocal == true && changed != false) {
         changed == true;
       } else if (changedLocal == false) {
