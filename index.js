@@ -40,10 +40,8 @@ async function checkChangelog() {
       for (const filename of gitChangedFiles) {
         if (filename.includes(fileLocation + "/" + file)) {
           changedLocal = true;
-          var contents = fs.readFileSync(fileLocation + "/" + object.filename);
-          if (contents.includes(header)) {
-            headerFoundLocal = true;
-          }
+          var contents = fs.readFileSync(directory + "/" + filename);
+          headerFoundLocal = contents.includes(header);
         }
       }
 
@@ -75,7 +73,7 @@ async function checkChangelog() {
     for (const filename of gitChangedFiles) {
       if (filename.includes(file)) {
         changed = true;
-        var contents = fs.readFileSync(directory + "/" + object.filename);
+        var contents = fs.readFileSync(directory + "/" + filename);
         headerFound = contents.includes(header);
       }
     }
