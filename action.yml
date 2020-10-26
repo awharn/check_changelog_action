@@ -9,17 +9,10 @@ inputs:
     description: 'The path to the changelog'
     required: false
     default: 'CHANGELOG.md'
-  token:
-    description: 'The GitHub token'
-    required: true
   lerna:
     description: 'Whether or not this is a lerna monorepo'
     required: false
     default: false
-  lerna-json:
-    description: 'If it is a monorepo, the output of npx lerna changed --json'
-    required: false
-    default: ""
 outputs:
   changed:
     description: 'If the changelog file was changed in the PR diff'
