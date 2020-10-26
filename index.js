@@ -27,7 +27,7 @@ async function execAndReturnOutput(command) {
 async function checkChangelog() {
   const eventData = JSON.parse(fs.readFileSync(eventPath, "utf-8"));
   const baseRef = eventData.pull_request.base.ref;
-  const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff ${baseRef} --name-only`)).trim().split("\n");
+  const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff origin/${baseRef} --name-only -- *${file}`)).trim().split("\n");
 
   if(lerna) {
     const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna changed --json --loglevel silent`));
