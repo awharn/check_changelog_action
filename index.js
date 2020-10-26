@@ -25,7 +25,7 @@ if (lerna) {
   }
 }
 
-var changed = undefined;
+var changed = false;
 var headerFound = undefined;
 var json;
 
@@ -36,7 +36,7 @@ function callback(error, response, body) {
     var errors = "";
     var changedLocal = false;
     var headerFoundLocal = false;
-    for (fileLocation in lernaLocations) {
+    for (const fileLocation of lernaLocations) {
       for (item in JSON.parse(body)) {
         var object = json[item];
         if (object.filename.toString().includes(fileLocation + "/" + file)) {
@@ -48,18 +48,17 @@ function callback(error, response, body) {
         }
       }
 
-      if (changedLocal == true && changed != false) {
+      if (changedLocal == true) {
         changed == true;
-      } else if (changedLocal == false) {
-        changed == false;
-        errors = errors + `The changelog was not changed in this pull request for ${fileLocation}.\n`;
-      }
 
-      if (headerFoundLocal == true && headerFound != false) {
-        headerFound == true;
-      } else if (headerFoundLocal == false) {
-        headerFound == false;
-        errors = errors + `The changelog has changed in ${fileLocation}, but the required header is missing.\n`;
+        if (headerFoundLocal == true && headerFound != false) {
+          headerFound == true;
+        } else if (headerFoundLocal == false) {
+          headerFound == false;
+          errors = errors + `The changelog has changed in ${fileLocation}, but the required header is missing.\n`;
+        }
+      } else if (changedLocal == false) {
+        errors = errors + `The changelog was not changed in this pull request for ${fileLocation}.\n`;
       }
     }
 
@@ -78,9 +77,7 @@ function callback(error, response, body) {
       if (object.filename.toString().includes(file)) {
         changed = true;
         var contents = fs.readFileSync(directory + "/" + object.filename);
-        if (contents.includes(header)) {
-          headerFound = true;
-        }
+        headerFound = contents.includes(header);
       }
     }
 
