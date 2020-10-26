@@ -1,45 +1,43 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
+const exec = require('@actions/exec');
 const fs = require('fs');
-const path = require('path');
-const request = require('request');
 
 const directory = process.env.GITHUB_WORKSPACE
+const eventPath = process.env.GITHUB_EVENT_PATH
 const header = core.getInput('header');
 const file = core.getInput('file');
-const token = core.getInput('token');
 const lerna = core.getInput('lerna');
-const lernaJson = core.getInput('lerna-json');
-var lernaJsonParsed;
-var lernaLocations = [];
-
-
-if (lerna) {
-  lernaJsonParsed = JSON.parse(lernaJson);
-  if (lernaJsonParsed) {
-    for (object of lernaJsonParsed) {
-      let location = object.location;
-      location = path.relative(directory, location);
-      lernaLocations.push(location);
-    }
-  }
-}
-
 var changed = false;
 var headerFound = undefined;
-var json;
 
-function callback(error, response, body) {
-  json = JSON.parse(body);
+async function execAndReturnOutput(command) {
+  let capturedOutput = "";
+  const options = {
+    listeners: {
+      stdout: (data) => {
+        capturedOutput += data.toString();
+      }
+    }
+  }
+  await exec.exec(command, undefined, options);
+  return capturedOutput;
+}
+
+async function checkChangelog() {
+  const eventData = JSON.parse(fs.readFileSync(eventPath, "utf-8"));
+  const headSha = eventData.pull_request.head.sha;
+  const baseSha = eventData.pull_request.base.sha;
+  const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff --name-only ${headSha}..${baseSha}`)).trim().split("\n");
 
   if(lerna) {
+    const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna changed --json --loglevel silent`));
     var errors = "";
     var changedLocal = false;
     var headerFoundLocal = false;
-    for (const fileLocation of lernaLocations) {
-      for (item in JSON.parse(body)) {
-        var object = json[item];
-        if (object.filename.toString().includes(fileLocation + "/" + file)) {
+    for (const package in lernaPackages) {
+      const fileLocation = package.location;
+      for (const filename of gitChangedFiles) {
+        if (filename.includes(fileLocation + "/" + file)) {
           changedLocal = true;
           var contents = fs.readFileSync(fileLocation + "/" + object.filename);
           if (contents.includes(header)) {
@@ -73,9 +71,8 @@ function callback(error, response, body) {
     }
 
   } else {
-    for (item in JSON.parse(body)) {
-      var object = json[item];
-      if (object.filename.toString().includes(file)) {
+    for (const filename of gitChangedFiles) {
+      if (filename.includes(file)) {
         changed = true;
         var contents = fs.readFileSync(directory + "/" + object.filename);
         headerFound = contents.includes(header);
@@ -98,20 +95,6 @@ function callback(error, response, body) {
   }
 }
 
-try {
-  const reqUrl = `https://api.github.com/repos/${github.context.payload.repository.full_name}/pulls/${github.context.payload.pull_request.number}/files`;
-
-  const reqOptions = {
-    url: reqUrl,
-    method: 'GET',
-    headers: {
-      'User-Agent': 'Check-Changelog-Action',
-      'Authorization': `Bearer ${token}`
-    }
-  };
-
-  request(reqOptions, callback);
-
-} catch (error) {
+checkChangelog().catch((error) => {
   core.setFailed(error.message);
-}
+});
