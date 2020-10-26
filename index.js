@@ -45,12 +45,12 @@ async function checkChangelog() {
       }
 
       if (changedLocal == true) {
-        changed == true;
+        changed = true;
 
         if (headerFoundLocal == true && headerFound != false) {
-          headerFound == true;
+          headerFound = true;
         } else if (headerFoundLocal == false) {
-          headerFound == false;
+          headerFound = false;
           errors = errors + `The changelog has changed in ${fileLocation}, but the required header is missing.\n`;
         }
       } else if (changedLocal == false) {
