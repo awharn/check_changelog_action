@@ -27,14 +27,14 @@ async function checkChangelog() {
   const eventData = JSON.parse(fs.readFileSync(eventPath, "utf-8"));
   const headSha = eventData.pull_request.head.sha;
   const baseSha = eventData.pull_request.base.sha;
-  const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff --name-only ${headSha}..${baseSha}`)).trim().split("\n");
+  const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff --name-only ${headSha}..${baseSha} -- *${file}`)).trim().split("\n");
 
   if(lerna) {
     const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna changed --json --loglevel silent`));
     var errors = "";
     var changedLocal = false;
     var headerFoundLocal = false;
-    for (const package in lernaPackages) {
+    for (const package of lernaPackages) {
       const fileLocation = package.location;
       for (const filename of gitChangedFiles) {
         if (filename.includes(fileLocation + "/" + file)) {
