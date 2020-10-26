@@ -61,6 +61,7 @@ function callback(error, response, body) {
         errors = errors + `The changelog was not changed in this pull request for ${fileLocation}.\n`;
       }
     }
+    headerFound = headerFound || false;
 
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
@@ -80,6 +81,7 @@ function callback(error, response, body) {
         headerFound = contents.includes(header);
       }
     }
+    headerFound = headerFound || false;
 
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
