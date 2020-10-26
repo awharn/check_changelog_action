@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const fs = require('fs');
+const path = require('path');
 
 const directory = process.env.GITHUB_WORKSPACE
 const eventPath = process.env.GITHUB_EVENT_PATH
@@ -35,7 +36,7 @@ async function checkChangelog() {
     var changedLocal = false;
     var headerFoundLocal = false;
     for (const package of lernaPackages) {
-      const fileLocation = package.location;
+      const fileLocation = path.relative(directory, package.location);
       for (const filename of gitChangedFiles) {
         if (filename.includes(fileLocation + "/" + file)) {
           changedLocal = true;
