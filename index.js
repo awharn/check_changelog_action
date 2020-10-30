@@ -7,7 +7,7 @@ const directory = process.env.GITHUB_WORKSPACE
 const eventPath = process.env.GITHUB_EVENT_PATH
 const header = core.getInput('header');
 const file = core.getInput('file');
-const lerna = core.getInput('lerna');
+const lerna = (core.getInput('lerna').toLowerCase() === "true");
 var changed = false;
 var headerFound = undefined;
 
