@@ -36,11 +36,11 @@ async function checkChangelog() {
   if(lerna) {
     const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna changed --json --loglevel silent`));
     var errors = "";
-    var changedLocal = false;
-    var headerFoundLocal = false;
     for (const package of lernaPackages) {
       const changelogLocation = path.join(path.relative(directory, package.location), file);
       console.log("Changelog location: " + changelogLocation);
+      let changedLocal = false;
+      let headerFoundLocal = false;
       let found = false;
       for (const filename of gitChangedFiles) {
         if (filename == changelogLocation) {
