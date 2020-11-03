@@ -49,6 +49,7 @@ async function checkChangelog() {
           changedLocal = true;
           var contents = fs.readFileSync(directory + "/" + filename);
           headerFoundLocal = contents.includes(header);
+          break;
         }
       }
 
