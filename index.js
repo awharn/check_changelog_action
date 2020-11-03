@@ -71,6 +71,9 @@ async function checkChangelog() {
       } else if (changedLocal == false) {
         errors = errors + `The changelog was not changed in this pull request for ${changelogLocation}.\n`;
       }
+      console.log("Errors: " + errors);
+      console.log("Changed: " + changed.toString());
+      console.log("HeaderFound: " + headerFound.toString());
     }
     headerFound = headerFound || false;
 
