@@ -9,8 +9,6 @@ const header = core.getInput('header');
 const file = core.getInput('file');
 const lerna = (core.getInput('lerna').toLowerCase() === "true");
 
-console.log("Lerna Input: " + core.getInput('lerna').toLowerCase());
-console.log("Lerna interpretation: " + lerna);
 
 var changed = undefined;
 var headerFound = undefined;
@@ -38,14 +36,12 @@ async function checkChangelog() {
     var errors = "";
     for (const package of lernaPackages) {
       const changelogLocation = path.join(path.relative(directory, package.location), file);
-      console.log("Changelog location: " + changelogLocation);
       let changedLocal = false;
       let headerFoundLocal = false;
       let found = false;
       for (const filename of gitChangedFiles) {
         if (filename == changelogLocation) {
           found = true;
-          console.log(filename);
           changedLocal = true;
           var contents = fs.readFileSync(directory + "/" + filename);
           headerFoundLocal = contents.includes(header);
@@ -69,13 +65,11 @@ async function checkChangelog() {
           errors = errors + `The changelog has changed in ${changelogLocation}, but the required header is missing.\n`;
         }
       } else if (changedLocal == false) {
+        changed = false;
+        headerFound = false;
         errors = errors + `The changelog was not changed in this pull request for ${changelogLocation}.\n`;
       }
-      console.log("Errors: " + errors);
-      console.log("Changed: " + changed.toString());
-      console.log("HeaderFound: " + headerFound.toString());
     }
-    headerFound = headerFound || false;
 
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
