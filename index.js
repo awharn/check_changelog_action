@@ -8,7 +8,11 @@ const eventPath = process.env.GITHUB_EVENT_PATH
 const header = core.getInput('header');
 const file = core.getInput('file');
 const lerna = (core.getInput('lerna').toLowerCase() === "true");
-var changed = false;
+
+console.log("Lerna Input: " + core.getInput('lerna').toLowerCase());
+console.log("Lerna interpretation: " + lerna);
+
+var changed = undefined;
 var headerFound = undefined;
 
 async function execAndReturnOutput(command) {
@@ -38,6 +42,7 @@ async function checkChangelog() {
       const fileLocation = path.relative(directory, package.location);
       for (const filename of gitChangedFiles) {
         if (filename.includes(fileLocation + "/" + file)) {
+          console.log(filename);
           changedLocal = true;
           var contents = fs.readFileSync(directory + "/" + filename);
           headerFoundLocal = contents.includes(header);
@@ -45,7 +50,9 @@ async function checkChangelog() {
       }
 
       if (changedLocal == true) {
-        changed = true;
+        if (changed == null || changed == true) {
+          changed = true;
+        }
 
         if (headerFoundLocal == true && headerFound != false) {
           headerFound = true;
