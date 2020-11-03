@@ -39,15 +39,22 @@ async function checkChangelog() {
     var changedLocal = false;
     var headerFoundLocal = false;
     for (const package of lernaPackages) {
-      const fileLocation = path.relative(directory, package.location);
+      const changelogLocation = path.join(path.relative(directory, package.location), file);
+      console.log("Changelog location: " + changelogLocation);
+      let found = false;
       for (const filename of gitChangedFiles) {
-        if (filename.includes(fileLocation + "/" + file)) {
+        if (fileName == changelogLocation) {
+          found = true;
           console.log(filename);
           changedLocal = true;
           var contents = fs.readFileSync(directory + "/" + filename);
           headerFoundLocal = contents.includes(header);
         }
       }
+
+      if (found == false) {
+        changedLocal = false;
+      };
 
       if (changedLocal == true) {
         if (changed == null || changed == true) {
