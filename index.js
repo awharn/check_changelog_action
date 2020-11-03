@@ -43,7 +43,7 @@ async function checkChangelog() {
       console.log("Changelog location: " + changelogLocation);
       let found = false;
       for (const filename of gitChangedFiles) {
-        if (fileName == changelogLocation) {
+        if (filename == changelogLocation) {
           found = true;
           console.log(filename);
           changedLocal = true;
