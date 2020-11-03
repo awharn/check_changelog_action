@@ -65,10 +65,10 @@ async function checkChangelog() {
           headerFound = true;
         } else if (headerFoundLocal == false) {
           headerFound = false;
-          errors = errors + `The changelog has changed in ${fileLocation}, but the required header is missing.\n`;
+          errors = errors + `The changelog has changed in ${changelogLocation}, but the required header is missing.\n`;
         }
       } else if (changedLocal == false) {
-        errors = errors + `The changelog was not changed in this pull request for ${fileLocation}.\n`;
+        errors = errors + `The changelog was not changed in this pull request for ${changelogLocation}.\n`;
       }
     }
     headerFound = headerFound || false;
