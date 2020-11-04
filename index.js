@@ -8,7 +8,9 @@ const eventPath = process.env.GITHUB_EVENT_PATH
 const header = core.getInput('header');
 const file = core.getInput('file');
 const lerna = (core.getInput('lerna').toLowerCase() === "true");
-var changed = false;
+
+
+var changed = undefined;
 var headerFound = undefined;
 
 async function execAndReturnOutput(command) {
@@ -32,32 +34,36 @@ async function checkChangelog() {
   if(lerna) {
     const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna changed --json --loglevel silent`));
     var errors = "";
-    var changedLocal = false;
-    var headerFoundLocal = false;
     for (const package of lernaPackages) {
-      const fileLocation = path.relative(directory, package.location);
+      const changelogLocation = path.join(path.relative(directory, package.location), file);
+      let changedLocal = false;
+      let headerFoundLocal = false;
       for (const filename of gitChangedFiles) {
-        if (filename.includes(fileLocation + "/" + file)) {
+        if (filename == changelogLocation) {
           changedLocal = true;
           var contents = fs.readFileSync(directory + "/" + filename);
           headerFoundLocal = contents.includes(header);
+          break;
         }
       }
 
       if (changedLocal == true) {
-        changed = true;
+        if (changed == null || changed == true) {
+          changed = true;
+        }
 
         if (headerFoundLocal == true && headerFound != false) {
           headerFound = true;
         } else if (headerFoundLocal == false) {
           headerFound = false;
-          errors = errors + `The changelog has changed in ${fileLocation}, but the required header is missing.\n`;
+          errors = errors + `The changelog has changed in ${changelogLocation}, but the required header is missing.\n`;
         }
       } else if (changedLocal == false) {
-        errors = errors + `The changelog was not changed in this pull request for ${fileLocation}.\n`;
+        changed = false;
+        headerFound = false;
+        errors = errors + `The changelog was not changed in this pull request for ${changelogLocation}.\n`;
       }
     }
-    headerFound = headerFound || false;
 
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
@@ -76,6 +82,8 @@ async function checkChangelog() {
         headerFound = contents.includes(header);
       }
     }
+    
+    changed = changed || false;
     headerFound = headerFound || false;
 
     core.setOutput('changed', changed.toString());

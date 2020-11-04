@@ -6,11 +6,11 @@
 
 ### `file`
 
-**Required** The path to the changelog. Default: `CHANGELOG.md`
+The path to the changelog, or the name of the changelog if Lerna is in use. Default: `CHANGELOG.md`
 
-### `token`
+### `lerna`
 
-**Required** The repository's GITHUB_TOKEN.
+Whether or not this is a lerna monorepo. Default: `false`
 
 ## Outputs
 
@@ -29,5 +29,5 @@ uses: awharn/check_changelog_action@master
 with:
   header: '## Recent Chagnes'
   file: 'CHANGELOG.md'
-  token: ${{ secrets.GITHUB_TOKEN }}
+  lerna: 'false'
 ```
