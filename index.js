@@ -38,20 +38,14 @@ async function checkChangelog() {
       const changelogLocation = path.join(path.relative(directory, package.location), file);
       let changedLocal = false;
       let headerFoundLocal = false;
-      let found = false;
       for (const filename of gitChangedFiles) {
         if (filename == changelogLocation) {
-          found = true;
           changedLocal = true;
           var contents = fs.readFileSync(directory + "/" + filename);
           headerFoundLocal = contents.includes(header);
           break;
         }
       }
-
-      if (found == false) {
-        changedLocal = false;
-      };
 
       if (changedLocal == true) {
         if (changed == null || changed == true) {
@@ -88,6 +82,8 @@ async function checkChangelog() {
         headerFound = contents.includes(header);
       }
     }
+    
+    changed = changed || false;
     headerFound = headerFound || false;
 
     core.setOutput('changed', changed.toString());
