@@ -32,7 +32,7 @@ async function checkChangelog() {
   const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff origin/${baseRef} --name-only`)).trim().split("\n");
 
   if(lerna) {
-    const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna changed --json --loglevel silent`));
+    const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     var errors = "";
     for (const package of lernaPackages) {
       const changelogLocation = path.join(path.relative(directory, package.location), file);
