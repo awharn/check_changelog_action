@@ -51,7 +51,7 @@ async function checkChangelog() {
     var errors = "";
     for (const package of lernaPackages) {
       const resolvedPkgDir = path.join(path.relative(directory, package.location));
-      let modifiedFiles = await execAndReturnOutputExtended(`/bin/bash`, [`-c`, `git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev '${ignoreFiles}'`]);
+      let modifiedFiles = await execAndReturnOutputExtended(`/bin/bash`, [`-c`, `'git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev \`${ignoreFiles}\`'`]);
       if (modifiedFiles.length <= 1) {
         lernaPackages = lernaPackages.filter(packages => packages.name != package.name);
       }
