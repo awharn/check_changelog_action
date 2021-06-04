@@ -7,8 +7,8 @@ const directory = process.env.GITHUB_WORKSPACE
 const eventPath = process.env.GITHUB_EVENT_PATH
 const header = core.getInput('header');
 const file = core.getInput('file');
+const ignoreFiles = core.getInput('ignoreFiles');
 const lerna = (core.getInput('lerna').toLowerCase() === "true");
-
 
 var changed = undefined;
 var headerFound = undefined;
@@ -32,8 +32,16 @@ async function checkChangelog() {
   const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff origin/${baseRef} --name-only`)).trim().split("\n");
 
   if(lerna) {
-    const lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
+    let lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     var errors = "";
+    for (const package of lernaPackages) {
+      const resolvedPkgDir = path.join(path.relative(directory, package.location));
+      let modifiedFiles = await execAndReturnOutput(`git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev '${ignoreFiles}'`);
+      if (modifiedFiles.length <= 1) {
+        lernaPackages = lernaPackages.filter(packages => packages.name != package.name);
+      }
+    }
+
     for (const package of lernaPackages) {
       const changelogLocation = path.join(path.relative(directory, package.location), file);
       let changedLocal = false;
@@ -75,11 +83,19 @@ async function checkChangelog() {
     }
 
   } else {
-    for (const filename of gitChangedFiles) {
-      if (filename.includes(file)) {
-        changed = true;
-        var contents = fs.readFileSync(directory + "/" + filename);
-        headerFound = contents.includes(header);
+    let modifiedFiles = await execAndReturnOutput(`git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'`);
+    if (modifiedFiles.length <= 1) {
+      changed = true;
+      headerFound = true;
+    }
+
+    if (!changed || !headerFound) {
+      for (const filename of gitChangedFiles) {
+        if (filename.includes(file)) {
+          changed = true;
+          var contents = fs.readFileSync(directory + "/" + filename);
+          headerFound = contents.includes(header);
+        }
       }
     }
     
