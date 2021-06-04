@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
+const execa = require('execa');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,16 +27,13 @@ async function execAndReturnOutput(command) {
   return capturedOutput;
 }
 
-async function execAndReturnOutputExtended(command, params) {
+async function execAndReturnOutputExeca(command) {
   let capturedOutput = "";
   const options = {
-    listeners: {
-      stdout: (data) => {
-        capturedOutput += data.toString();
-      }
-    }
+    shell: true
   }
-  await exec.exec(command, params, options);
+  let result = await execa(command, params, options);
+  capturedOutput = result.stdout;
   return capturedOutput;
 }
 
@@ -51,7 +49,7 @@ async function checkChangelog() {
     var errors = "";
     for (const package of lernaPackages) {
       const resolvedPkgDir = path.join(path.relative(directory, package.location));
-      let modifiedFiles = await execAndReturnOutputExtended(`/bin/bash`, [`-c`, `'git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev \`${ignoreFiles}\`'`]);
+      let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev '${ignoreFiles}'`);
       if (modifiedFiles.length <= 1) {
         lernaPackages = lernaPackages.filter(packages => packages.name != package.name);
       }
@@ -98,7 +96,7 @@ async function checkChangelog() {
     }
 
   } else {
-    let modifiedFiles = await execAndReturnOutputExtended(`/bin/bash`, [`-c`, `git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'`]);
+    let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'`);
     if (modifiedFiles.length <= 1) {
       changed = true;
       headerFound = true;
