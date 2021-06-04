@@ -49,8 +49,8 @@ async function checkChangelog() {
     var errors = "";
     for (const package of lernaPackages) {
       const resolvedPkgDir = path.join(path.relative(directory, package.location));
-      let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev '${ignoreFiles}'`);
-      if (modifiedFiles.length <= 1) {
+      let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev '${ignoreFiles}' || true`);
+      if (modifiedFiles.length == 0) {
         lernaPackages = lernaPackages.filter(packages => packages.name != package.name);
       }
     }
@@ -96,8 +96,8 @@ async function checkChangelog() {
     }
 
   } else {
-    let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'`);
-    if (modifiedFiles.length <= 1) {
+    let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}' || true`);
+    if (modifiedFiles.length == 0) {
       changed = true;
       headerFound = true;
     }
