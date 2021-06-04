@@ -30,7 +30,7 @@ async function execAndReturnOutput(command) {
 async function execAndReturnOutputExeca(command) {
   let capturedOutput = "";
   const options = {
-    shell: true
+    shell: "/bin/bash"
   }
   let result = await execa(command, undefined, options);
   capturedOutput = result.stdout;
