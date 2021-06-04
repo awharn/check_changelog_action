@@ -83,7 +83,7 @@ async function checkChangelog() {
     }
 
   } else {
-    let modifiedFiles = await execAndReturnOutput(`bash -c "git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'"`);
+    let modifiedFiles = await execAndReturnOutput(`/bin/bash -c "git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'"`);
     if (modifiedFiles.length <= 1) {
       changed = true;
       headerFound = true;
