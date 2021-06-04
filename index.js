@@ -31,12 +31,14 @@ async function checkChangelog() {
   const baseRef = eventData.pull_request.base.ref;
   const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff origin/${baseRef} --name-only`)).trim().split("\n");
 
+  exec.exec('which grep');
+
   if(lerna) {
     let lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     var errors = "";
     for (const package of lernaPackages) {
       const resolvedPkgDir = path.join(path.relative(directory, package.location));
-      let modifiedFiles = await execAndReturnOutput(`/bin/bash -c \"git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev '${ignoreFiles}'\"`);
+      let modifiedFiles = await execAndReturnOutput(`/bin/bash -c 'git diff --name-only origin/${baseRef}..HEAD -- ${resolvedPkgDir} | grep -Ev "${ignoreFiles}"'`);
       if (modifiedFiles.length <= 1) {
         lernaPackages = lernaPackages.filter(packages => packages.name != package.name);
       }
@@ -83,7 +85,7 @@ async function checkChangelog() {
     }
 
   } else {
-    let modifiedFiles = await execAndReturnOutput(`/bin/bash -c \"git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}'\"`);
+    let modifiedFiles = await execAndReturnOutput(`/bin/bash -c 'git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev "${ignoreFiles}"'`);
     if (modifiedFiles.length <= 1) {
       changed = true;
       headerFound = true;
