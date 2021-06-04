@@ -32,7 +32,7 @@ async function execAndReturnOutputExeca(command) {
   const options = {
     shell: true
   }
-  let result = await execa(command, params, options);
+  let result = await execa(command, undefined, options);
   capturedOutput = result.stdout;
   return capturedOutput;
 }
