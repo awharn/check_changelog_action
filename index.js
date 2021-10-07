@@ -18,7 +18,9 @@ async function execAndReturnOutput(command) {
   const options = {
     listeners: {
       stdout: (data) => {
-        capturedOutput += data.toString();
+        if (data != null){
+          capturedOutput += data.toString();
+        }
       }
     }
   }
@@ -65,6 +67,9 @@ async function checkChangelog() {
       }
     }
 
+    if (changed == undefined) { console.log("Changed is undefined. Please report this issue."); }
+    if (header == undefined) { console.log("Header is undefined. Please report this issue."); }
+
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
 
@@ -85,6 +90,9 @@ async function checkChangelog() {
     
     changed = changed || false;
     headerFound = headerFound || false;
+
+    if (changed == undefined) { console.log("Changed is undefined. Please report this issue."); }
+    if (header == undefined) { console.log("Header is undefined. Please report this issue."); }
 
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
