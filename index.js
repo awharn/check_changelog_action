@@ -102,7 +102,7 @@ async function checkChangelog() {
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
 
-    if (changed == false || headerFound == false) {
+    if (changes == true && (changed == false || headerFound == false)) {
       const err = new Error(errors);
       err.stack = "";
       throw err;
