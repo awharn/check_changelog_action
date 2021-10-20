@@ -59,7 +59,7 @@ async function checkChangelog() {
     if (lernaPackages.length == 0) {
       changes = false;
       changed = false;
-      header = false;
+      headerFound = false;
     } else {
       changes = true;
       for (const package of lernaPackages) {
@@ -130,7 +130,7 @@ async function checkChangelog() {
 
     if (changes == undefined) { console.log("Changes is undefined. Please report this issue."); }
     if (changed == undefined) { console.log("Changed is undefined. Please report this issue."); }
-    if (header == undefined) { console.log("Header is undefined. Please report this issue."); }
+    if (headerFound == undefined) { console.log("Header is undefined. Please report this issue."); }
 
     core.setOutput('changes', changes.toString());
     core.setOutput('changed', changed.toString());
