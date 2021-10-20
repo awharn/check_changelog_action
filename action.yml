@@ -18,6 +18,8 @@ inputs:
     required: false
     default: 'package-lock.json'
 outputs:
+  changes:
+    description: 'If changes were made to non-ignored files in the PR diff'
   changed:
     description: 'If the changelog file was changed in the PR diff'
   header:

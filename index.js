@@ -11,6 +11,7 @@ const file = core.getInput('file');
 const ignoreFiles = core.getInput('ignoreFiles');
 const lerna = (core.getInput('lerna').toLowerCase() === "true");
 
+var changes = undefined;
 var changed = undefined;
 var headerFound = undefined;
 
@@ -44,8 +45,6 @@ async function checkChangelog() {
   const baseRef = eventData.pull_request.base.ref;
   const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff origin/${baseRef} --name-only`)).trim().split("\n");
 
-  exec.exec('which grep');
-
   if(lerna) {
     let lernaPackages = JSON.parse(await execAndReturnOutput(`npx lerna list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     var errors = "";
@@ -57,40 +56,49 @@ async function checkChangelog() {
       }
     }
 
-    for (const package of lernaPackages) {
-      const changelogLocation = path.join(path.relative(directory, package.location), file);
-      let changedLocal = false;
-      let headerFoundLocal = false;
-      for (const filename of gitChangedFiles) {
-        if (filename == changelogLocation) {
-          changedLocal = true;
-          var contents = fs.readFileSync(directory + "/" + filename);
-          headerFoundLocal = contents.includes(header);
-          break;
+    if (lernaPackages.length == 0) {
+      changes = false;
+      changed = false;
+      header = false;
+    } else {
+      changes = true;
+      for (const package of lernaPackages) {
+        const changelogLocation = path.join(path.relative(directory, package.location), file);
+        let changedLocal = false;
+        let headerFoundLocal = false;
+        for (const filename of gitChangedFiles) {
+          if (filename == changelogLocation) {
+            changedLocal = true;
+            var contents = fs.readFileSync(directory + "/" + filename);
+            headerFoundLocal = contents.includes(header);
+            break;
+          }
         }
-      }
 
-      if (changedLocal == true) {
-        if (changed == null || changed == true) {
-          changed = true;
-        }
+        if (changedLocal == true) {
+          if (changed == null || changed == true) {
+            changed = true;
+          }
 
-        if (headerFoundLocal == true && headerFound != false) {
-          headerFound = true;
-        } else if (headerFoundLocal == false) {
+          if (headerFoundLocal == true && headerFound != false) {
+            headerFound = true;
+          } else if (headerFoundLocal == false) {
+            headerFound = false;
+            errors = errors + `The changelog has changed in ${changelogLocation}, but the required header is missing.\n`;
+          }
+        } else if (changedLocal == false) {
+          changed = false;
           headerFound = false;
-          errors = errors + `The changelog has changed in ${changelogLocation}, but the required header is missing.\n`;
+          errors = errors + `The changelog was not changed in this pull request for ${changelogLocation}.\n`;
         }
-      } else if (changedLocal == false) {
-        changed = false;
-        headerFound = false;
-        errors = errors + `The changelog was not changed in this pull request for ${changelogLocation}.\n`;
       }
     }
 
+    if (changes == undefined) { console.log("Changes is undefined. Please report this issue."); }
     if (changed == undefined) { console.log("Changed is undefined. Please report this issue."); }
     if (header == undefined) { console.log("Header is undefined. Please report this issue."); }
 
+    core.setOutput('changes', changes.toString());
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
 
@@ -103,11 +111,11 @@ async function checkChangelog() {
   } else {
     let modifiedFiles = await execAndReturnOutputExeca(`git diff --name-only origin/${baseRef}..HEAD -- $(pwd) | grep -Ev '${ignoreFiles}' || true`);
     if (modifiedFiles.length == 0) {
-      changed = true;
-      headerFound = true;
-    }
-
-    if (!changed || !headerFound) {
+      changes = false;
+      changed = false;
+      headerFound = false;
+    } else {
+      changes = true;
       for (const filename of gitChangedFiles) {
         if (filename.includes(file)) {
           changed = true;
@@ -120,20 +128,24 @@ async function checkChangelog() {
     changed = changed || false;
     headerFound = headerFound || false;
 
+    if (changes == undefined) { console.log("Changes is undefined. Please report this issue."); }
     if (changed == undefined) { console.log("Changed is undefined. Please report this issue."); }
     if (header == undefined) { console.log("Header is undefined. Please report this issue."); }
 
+    core.setOutput('changes', changes.toString());
     core.setOutput('changed', changed.toString());
     core.setOutput('header', headerFound.toString());
 
-    if (changed == false) {
-      const err = new Error("The changelog was not changed in this pull request.");
-      err.stack = "";
-      throw err;
-    } else if (headerFound == false) {
-      const err = new Error("The changelog has changed, but the required header is missing.");
-      err.stack = "";
-      throw err;
+    if (changes == true) {
+      if (changed == false) {
+        const err = new Error("The changelog was not changed in this pull request.");
+        err.stack = "";
+        throw err;
+      } else if (headerFound == false) {
+        const err = new Error("The changelog has changed, but the required header is missing.");
+        err.stack = "";
+        throw err;
+      }
     }
   }
 }
