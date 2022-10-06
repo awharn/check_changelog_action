@@ -135,9 +135,9 @@ async function checkChangelog() {
       }
     }
 
-    changes = changes ?? false;
-    changed = changed ?? false;
-    headerFound = headerFound ?? false;
+    changes = changes || false;
+    changed = changed || false;
+    headerFound = headerFound || false;
 
     if (changes == true) {
       if (changed == false) {
