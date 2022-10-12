@@ -13,6 +13,10 @@ inputs:
     description: 'Whether or not this is a lerna monorepo'
     required: false
     default: false
+  yarnWorkspaces:
+    description: 'Whether or not this is a yarn workspaces monorepo'
+    required: false
+    default: false
   ignoreFiles:
     description: 'The files in a repository that, if changed, do not require a changelog update'
     required: false
