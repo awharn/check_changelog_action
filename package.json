@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/awharn/check_changelog_action#readme",
   "dependencies": {
-    "@actions/core": "^1.9.1",
-    "@actions/exec": "^1.0.4",
+    "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
     "execa": "^5.1.1"
   }
 }
