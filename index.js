@@ -74,7 +74,7 @@ async function checkChangelog() {
         core.error(`Only Yarn 1.x and 2.x are supported. ${REPORT_ISSUE}`);
       }
     } else if (lerna) {
-      packages = JSON.parse(await execAndReturnOutput(`npx lerna list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
+      packages = JSON.parse(await execAndReturnOutput(`npx lerna@6 list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     }
 
     for (const package of packages) {
