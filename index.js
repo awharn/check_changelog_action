@@ -10,6 +10,7 @@ const header = core.getInput('header');
 const file = core.getInput('file');
 const ignoreFiles = core.getInput('ignoreFiles');
 const lerna = (core.getInput('lerna').toLowerCase() === "true");
+const usingPnpm = (core.getInput('pnpm').toLowerCase() === "true");
 const yarnWorkspaces = (core.getInput('yarnWorkspaces').toLowerCase() === "true");
 
 const REPORT_ISSUE = `
@@ -20,6 +21,14 @@ https://github.com/awharn/check_changelog_action/issues/new
 let changes;
 let changed;
 let headerFound;
+
+/**
+ * Note:
+ *    A bit of logic may need to be introduced if the package name does not match its CLI
+ *    For example:
+ *        - npx tsc ---> pnpm --package=typescript dlx tsc
+ */
+const npxCmd = usingPnpm ? "pnpm dlx" : "npx";
 
 async function execAndReturnOutput(command) {
   let capturedOutput = "";
@@ -55,9 +64,9 @@ async function checkChangelog() {
   if (lerna || yarnWorkspaces) {
     let packages = [];
     if (yarnWorkspaces) {
-      const yarnVersion = (await execAndReturnOutput("npx yarn --version")).trim();
+      const yarnVersion = (await execAndReturnOutput(`${npxCmd} yarn --version`)).trim();
       if (yarnVersion.startsWith("1.")) {
-        const workspaceInfo = JSON.parse((await execAndReturnOutput("npx yarn workspaces info --json --silent")).trim().split("\n").slice(1, -1).join(""));
+        const workspaceInfo = JSON.parse((await execAndReturnOutput(`${npxCmd} yarn workspaces info --json --silent`)).trim().split("\n").slice(1, -1).join(""));
         for (const p in workspaceInfo) {
           packages.push({
             name: p,
@@ -66,7 +75,7 @@ async function checkChangelog() {
         }
       } else if (yarnVersion.startsWith("2.")) {
         // TODO: test yarn 2.x support
-        packages = JSON.parse((await execAndReturnOutput("npx yarn workspaces info --json")).trim());
+        packages = JSON.parse((await execAndReturnOutput(`${npxCmd} yarn workspaces info --json`)).trim());
       } else {
         changes = false;
         changed = false;
@@ -74,7 +83,7 @@ async function checkChangelog() {
         core.error(`Only Yarn 1.x and 2.x are supported. ${REPORT_ISSUE}`);
       }
     } else if (lerna) {
-      packages = JSON.parse(await execAndReturnOutput(`npx lerna@6 list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
+      packages = JSON.parse(await execAndReturnOutput(`${npxCmd} lerna@6 list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     }
 
     for (const package of packages) {
