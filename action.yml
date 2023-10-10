@@ -13,6 +13,10 @@ inputs:
     description: 'Whether or not this is a lerna monorepo'
     required: false
     default: false
+  pnpm:
+    description: 'Whether or not this is a pnpm monorepo'
+    required: false
+    default: false
   yarnWorkspaces:
     description: 'Whether or not this is a yarn workspaces monorepo'
     required: false
