@@ -61,7 +61,7 @@ async function checkChangelog() {
   const gitChangedFiles = (await execAndReturnOutput(`git --no-pager diff origin/${baseRef} --name-only`)).trim().split("\n");
   let errors = "";
 
-  if (lerna || yarnWorkspaces) {
+  if (lerna || usingPnpm || yarnWorkspaces) {
     let packages = [];
     if (yarnWorkspaces) {
       const yarnVersion = (await execAndReturnOutput(`${npxCmd} yarn --version`)).trim();
@@ -82,7 +82,7 @@ async function checkChangelog() {
         headerFound = false;
         core.error(`Only Yarn 1.x and 2.x are supported. ${REPORT_ISSUE}`);
       }
-    } else if (lerna) {
+    } else if (lerna || usingPnpm) {
       packages = JSON.parse(await execAndReturnOutput(`${npxCmd} lerna@6 list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
     }
 
