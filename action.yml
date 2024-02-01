@@ -33,5 +33,5 @@ outputs:
   header:
     description: 'If the required header was found'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'index.js'
