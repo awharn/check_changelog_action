@@ -83,7 +83,19 @@ async function checkChangelog() {
         core.error(`Only Yarn 1.x and 2.x are supported. ${REPORT_ISSUE}`);
       }
     } else if (lerna) {
+      let isLernaTemp = false;
+      if (!fs.existsSync("lerna.json")) {
+        const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+        isLernaTemp = true;
+        fs.writeFileSync("lerna.json", JSON.stringify({
+            version: packageJson.version,
+            useWorkspaces: true
+        }, null, 2));
+      }
       packages = JSON.parse(await execAndReturnOutput(`${npxCmd} lerna@6 list --since origin/${baseRef} --exclude-dependents --json --loglevel silent`));
+      if (isLernaTemp) {
+        fs.rmSync("lerna.json", {force: true});
+      }
     }
 
     for (const package of packages) {
