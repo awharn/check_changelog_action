@@ -85,6 +85,7 @@ async function checkChangelog() {
     } else if (lerna) {
       let isLernaTemp = false;
       if (!fs.existsSync("lerna.json")) {
+        const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
         isLernaTemp = true;
         fs.writeFileSync("lerna.json", JSON.stringify({
             version: packageJson.version,
